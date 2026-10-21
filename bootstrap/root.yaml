@@ -1,0 +1,21 @@
+# Applied once by hand: kubectl apply -f bootstrap/root.yaml
+# Argo CD then applies every Application under argocd-apps/, and keeps the
+# cluster matching Git from there.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/okedeji/hybernate-staging.git
+    targetRevision: main
+    path: argocd-apps
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
