@@ -1,0 +1,43 @@
+# Google's Online Boutique: eleven services with real traffic between them.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: boutique
+resources:
+  - https://raw.githubusercontent.com/GoogleCloudPlatform/microservices-demo/v0.10.7/release/kubernetes-manifests.yaml
+  - ingress.yaml
+  - frontend-hpa.yaml
+patches:
+  # Its own load generator runs around the clock; apps/loadgen keeps
+  # working hours instead.
+  - target: {kind: Deployment, name: loadgenerator}
+    patch: |
+      $patch: delete
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: loadgenerator
+  - target: {kind: ServiceAccount, name: loadgenerator}
+    patch: |
+      $patch: delete
+      apiVersion: v1
+      kind: ServiceAccount
+      metadata:
+        name: loadgenerator
+  # A second load balancer; the shared ingress serves the frontend instead.
+  - target: {kind: Service, name: frontend-external}
+    patch: |
+      $patch: delete
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: frontend-external
+  # Every service runs on the spot workloads pool.
+  - target: {kind: Deployment}
+    patch: |
+      - op: add
+        path: /spec/template/spec/nodeSelector
+        value: {tier: non-prod}
+      - op: add
+        path: /spec/template/spec/tolerations
+        value:
+          - {key: tier, operator: Equal, value: non-prod, effect: NoSchedule}

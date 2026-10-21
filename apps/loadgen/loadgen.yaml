@@ -1,0 +1,44 @@
+# Working-hours traffic: every 5 minutes, 09:00-17:59 Lagos time, Monday to
+# Friday, a job browses the shop, places and lists orders, and reads a
+# report for about four minutes. Nights and weekends stay quiet.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: working-hours
+spec:
+  schedule: "*/5 9-17 * * 1-5"
+  timeZone: Africa/Lagos
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 285
+      template:
+        spec:
+          restartPolicy: Never
+          nodeSelector:
+            tier: system
+          containers:
+            - name: traffic
+              image: curlimages/curl:8.11.1
+              resources:
+                requests: {cpu: 10m, memory: 16Mi}
+              command:
+                - sh
+                - -c
+                - |
+                  shop=http://frontend.boutique.svc.cluster.local
+                  orders=http://api.orders.svc.cluster.local/orders
+                  reports=http://reports.reports.svc.cluster.local/hostname
+                  end=$(( $(date +%s) + 270 ))
+                  while [ "$(date +%s)" -lt "$end" ]; do
+                    curl -s -o /dev/null -m 120 "$shop/"
+                    curl -s -o /dev/null -m 120 "$shop/product/OLJCESPC7Z"
+                    curl -s -o /dev/null -m 120 -H 'Content-Type: application/json' \
+                      -d '{"item":"sunglasses","qty":1}' "$orders"
+                    curl -s -o /dev/null -m 120 "$orders?order=id.desc&limit=5"
+                    curl -s -o /dev/null -m 120 "$reports"
+                    sleep $(( $(od -An -N1 -tu1 /dev/urandom) % 10 + 2 ))
+                  done

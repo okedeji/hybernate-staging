@@ -1,0 +1,88 @@
+# The orders database. Its volume is kept when the StatefulSet scales to
+# zero, so a pause must leave the data in place.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init
+data:
+  01-schema.sql: |
+    create schema api;
+    create table api.orders (
+      id serial primary key,
+      item text not null,
+      qty int not null default 1,
+      created_at timestamptz not null default now()
+    );
+    create role web_anon nologin;
+    grant usage on schema api to web_anon;
+    grant select, insert on api.orders to web_anon;
+    grant usage, select on sequence api.orders_id_seq to web_anon;
+    create role authenticator noinherit login;
+    grant web_anon to authenticator;
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+spec:
+  selector:
+    app: postgres
+  ports:
+    - name: postgres
+      port: 5432
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+spec:
+  serviceName: postgres
+  replicas: 1
+  persistentVolumeClaimRetentionPolicy:
+    whenScaled: Retain
+    whenDeleted: Retain
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      nodeSelector:
+        tier: non-prod
+      tolerations:
+        - {key: tier, operator: Equal, value: non-prod, effect: NoSchedule}
+      containers:
+        - name: postgres
+          image: postgres:17-alpine
+          env:
+            - {name: POSTGRES_DB, value: orders}
+            # Reachable only inside the cluster, and this repo is public:
+            # a password here would be no secret.
+            - {name: POSTGRES_HOST_AUTH_METHOD, value: trust}
+            - {name: PGDATA, value: /var/lib/postgresql/data/pgdata}
+          ports:
+            - containerPort: 5432
+          readinessProbe:
+            exec:
+              command: [pg_isready, -U, postgres, -d, orders]
+            periodSeconds: 5
+          resources:
+            requests: {cpu: 100m, memory: 256Mi}
+          volumeMounts:
+            - {name: data, mountPath: /var/lib/postgresql/data}
+            - {name: init, mountPath: /docker-entrypoint-initdb.d}
+      volumes:
+        - name: init
+          configMap:
+            name: postgres-init
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        storageClassName: standard
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: 5Gi

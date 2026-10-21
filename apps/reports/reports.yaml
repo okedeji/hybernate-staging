@@ -1,0 +1,55 @@
+# A StatefulSet whose claims Kubernetes deletes when it scales down.
+# Pausing it would lose its data, so Hybernate must refuse to.
+apiVersion: v1
+kind: Service
+metadata:
+  name: reports
+spec:
+  selector:
+    app: reports
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: reports
+spec:
+  serviceName: reports
+  replicas: 1
+  persistentVolumeClaimRetentionPolicy:
+    whenScaled: Delete
+    whenDeleted: Delete
+  selector:
+    matchLabels:
+      app: reports
+  template:
+    metadata:
+      labels:
+        app: reports
+    spec:
+      nodeSelector:
+        tier: non-prod
+      tolerations:
+        - {key: tier, operator: Equal, value: non-prod, effect: NoSchedule}
+      containers:
+        - name: reports
+          image: registry.k8s.io/e2e-test-images/agnhost:2.53
+          args: [netexec, --http-port=8080]
+          ports:
+            - containerPort: 8080
+          resources:
+            requests: {cpu: 20m, memory: 32Mi}
+          volumeMounts:
+            - {name: data, mountPath: /data}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        storageClassName: standard
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: 1Gi

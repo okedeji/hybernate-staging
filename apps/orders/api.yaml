@@ -1,0 +1,60 @@
+# A small web API over the orders table: GET and POST /orders.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      nodeSelector:
+        tier: non-prod
+      tolerations:
+        - {key: tier, operator: Equal, value: non-prod, effect: NoSchedule}
+      containers:
+        - name: postgrest
+          image: postgrest/postgrest:v16.4
+          env:
+            - {name: PGRST_DB_URI, value: "postgres://authenticator@postgres:5432/orders"}
+            - {name: PGRST_DB_SCHEMAS, value: api}
+            - {name: PGRST_DB_ANON_ROLE, value: web_anon}
+          ports:
+            - containerPort: 3000
+          resources:
+            requests: {cpu: 50m, memory: 64Mi}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api
+spec:
+  selector:
+    app: api
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: orders.34.34.191.164.nip.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: api
+                port:
+                  number: 80
