@@ -1,0 +1,24 @@
+# Hybernate itself, as its installation guide's Argo CD tab has it.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: hybernate
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: ghcr.io/okedeji/charts
+    chart: hybernate
+    targetRevision: 0.2.0-rc.4
+    helm:
+      valuesObject:
+        timezone: Africa/Lagos
+        prometheus:
+          url: http://prometheus-kube-prometheus-prometheus.monitoring.svc:9090
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: hybernate-system
+  syncPolicy:
+    automated: {}
+    syncOptions:
+      - CreateNamespace=true
