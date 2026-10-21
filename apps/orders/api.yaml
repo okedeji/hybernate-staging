@@ -3,6 +3,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: api
+  labels:
+    hybernate.io/managed: "true"
+  annotations:
+    hybernate.io/dry-run: "false"
+    hybernate.io/idle-after: "5m"
 spec:
   replicas: 2
   selector:

@@ -16,6 +16,8 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: reports
+  labels:
+    hybernate.io/managed: "true"
 spec:
   serviceName: reports
   replicas: 1

@@ -31,6 +31,20 @@ patches:
       kind: Service
       metadata:
         name: frontend-external
+  # Hybernate manages every service, measuring first: nothing is paused
+  # while dry-run is on. The upstream manifests can't carry the label, so
+  # a patch adds it to each Deployment's own metadata; commonLabels would
+  # add it to their selectors too.
+  - target: {kind: Deployment}
+    patch: |
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: any
+        labels:
+          hybernate.io/managed: "true"
+        annotations:
+          hybernate.io/dry-run: "true"
   # Every service runs on the spot workloads pool.
   - target: {kind: Deployment}
     patch: |

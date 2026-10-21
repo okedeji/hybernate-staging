@@ -35,6 +35,10 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: postgres
+  labels:
+    hybernate.io/managed: "true"
+  annotations:
+    hybernate.io/dry-run: "true"
 spec:
   serviceName: postgres
   replicas: 1
