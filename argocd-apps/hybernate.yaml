@@ -13,6 +13,11 @@ spec:
     helm:
       valuesObject:
         timezone: Africa/Lagos
+        # A dev image of P26 (a restart keeps dry-run's would-be pauses and the idle clocks), to
+        # verify on GKE before PR #64 merges; back to the release after.
+        image:
+          repository: europe-west1-docker.pkg.dev/hybernate-prelaunch/hybernate-dev/hybernate
+          tag: dev-p26-da791df
         prometheus:
           url: http://prometheus-kube-prometheus-prometheus.monitoring.svc:9090
   destination:
