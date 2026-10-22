@@ -13,12 +13,11 @@ spec:
     helm:
       valuesObject:
         timezone: Africa/Lagos
-        # Debug while finding why the forecast learns no live hour (P15); back to info after.
-        logLevel: debug
-        # A dev image of fix/prelaunch-findings-2 (P15, P18), to verify before the PR; back to the release after.
+        # A dev image of fix/prelaunch-findings-2, the PR for the pre-launch findings, until the next
+        # release candidate: rc.4's forecast learns no live hour (P15), so the forecast test needs it.
         image:
           repository: europe-west1-docker.pkg.dev/hybernate-prelaunch/hybernate-dev/hybernate
-          tag: dev-c218c9c
+          tag: dev-9801f14
         prometheus:
           url: http://prometheus-kube-prometheus-prometheus.monitoring.svc:9090
   destination:
