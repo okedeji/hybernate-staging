@@ -13,6 +13,8 @@ spec:
     helm:
       valuesObject:
         timezone: Africa/Lagos
+        # Debug while finding why the forecast learns no live hour (P15); back to info after.
+        logLevel: debug
         prometheus:
           url: http://prometheus-kube-prometheus-prometheus.monitoring.svc:9090
   destination:
