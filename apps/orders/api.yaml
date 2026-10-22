@@ -8,6 +8,8 @@ metadata:
   annotations:
     hybernate.io/dry-run: "false"
     hybernate.io/idle-after: "5m"
+    # The forecast test: woken before weekday mornings once the forecast acts.
+    hybernate.io/auto-resume: "true"
 spec:
   replicas: 2
   selector:
