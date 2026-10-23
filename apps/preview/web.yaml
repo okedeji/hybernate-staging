@@ -71,3 +71,16 @@ spec:
                 name: web
                 port:
                   number: 80
+    # Reached only through a port-forward to ingress-nginx: browsers treat
+    # *.localhost as secure, so they send fetch metadata (Sec-Fetch-*) to it,
+    # which they never send to the plain-HTTP address above.
+    - host: preview.localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  number: 80
