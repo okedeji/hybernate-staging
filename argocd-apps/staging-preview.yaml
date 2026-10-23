@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: staging-preview
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/okedeji/hybernate-staging.git
+    targetRevision: main
+    path: apps/preview
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: preview
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      # Leave replicas to Hybernate (and the HPA): argocd-cm ignores
+      # them in diffs, and this keeps syncs from setting them back.
+      - RespectIgnoreDifferences=true

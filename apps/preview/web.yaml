@@ -1,0 +1,73 @@
+# A preview environment on a public URL, as a team with one per pull
+# request has: woken only by a person (the doorman's Wake it button) or by
+# tooling (hybernate.io/wake-requested), so crawlers can't keep it awake.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  labels:
+    hybernate.io/managed: "true"
+  annotations:
+    hybernate.io/dry-run: "false"
+    hybernate.io/idle-after: "5m"
+    hybernate.io/wake: ask
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: web
+          image: nginxinc/nginx-unprivileged:1.27-alpine
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+          resources:
+            requests:
+              cpu: 20m
+              memory: 32Mi
+      nodeSelector:
+        tier: non-prod
+      tolerations:
+        - key: tier
+          operator: Equal
+          value: non-prod
+          effect: NoSchedule
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+spec:
+  selector:
+    app: web
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: preview.34.34.191.164.nip.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  number: 80
