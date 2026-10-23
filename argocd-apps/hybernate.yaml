@@ -9,15 +9,10 @@ spec:
   source:
     repoURL: ghcr.io/okedeji/charts
     chart: hybernate
-    targetRevision: 0.2.0-rc.5
+    targetRevision: 0.2.0-rc.6
     helm:
       valuesObject:
         timezone: Africa/Lagos
-        # A dev image of P26 (a restart keeps dry-run's would-be pauses), to
-        # verify on GKE before PR #64 merges; back to the release after.
-        image:
-          repository: europe-west1-docker.pkg.dev/hybernate-prelaunch/hybernate-dev/hybernate
-          tag: dev-p26-8d52e72
         prometheus:
           url: http://prometheus-kube-prometheus-prometheus.monitoring.svc:9090
   destination:
