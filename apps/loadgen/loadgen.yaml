@@ -32,8 +32,8 @@ spec:
                 - -c
                 - |
                   ingress=http://ingress-nginx-controller.ingress-nginx.svc.cluster.local
-                  shop="Host: boutique.34.34.191.164.nip.io"
-                  orders="Host: orders.34.34.191.164.nip.io"
+                  shop="Host: boutique.34.156.46.233.nip.io"
+                  orders="Host: orders.34.156.46.233.nip.io"
                   reports=http://reports.reports.svc.cluster.local/hostname
                   end=$(( $(date +%s) + 270 ))
                   shopper() {

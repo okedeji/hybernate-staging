@@ -61,7 +61,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: preview.34.34.191.164.nip.io
+    - host: preview.34.156.46.233.nip.io
       http:
         paths:
           - path: /

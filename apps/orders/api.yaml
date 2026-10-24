@@ -55,7 +55,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: orders.34.34.191.164.nip.io
+    - host: orders.34.156.46.233.nip.io
       http:
         paths:
           - path: /
