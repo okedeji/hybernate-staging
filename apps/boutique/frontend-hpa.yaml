@@ -1,4 +1,4 @@
-# Most teams autoscale their frontend; Hybernate has to work alongside it.
+# Most teams autoscale their frontend; Napwake has to work alongside it.
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:

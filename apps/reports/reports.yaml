@@ -1,5 +1,5 @@
 # A StatefulSet whose claims Kubernetes deletes when it scales down.
-# Pausing it would lose its data, so Hybernate must refuse to.
+# Pausing it would lose its data, so Napwake must refuse to.
 apiVersion: v1
 kind: Service
 metadata:
@@ -17,7 +17,7 @@ kind: StatefulSet
 metadata:
   name: reports
   labels:
-    hybernate.io/managed: "true"
+    napwake.dev/managed: "true"
 spec:
   serviceName: reports
   replicas: 1

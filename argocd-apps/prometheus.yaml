@@ -1,6 +1,6 @@
-# Prometheus for activity queries and Hybernate's metrics. Kept small: no
+# Prometheus for activity queries and Napwake's metrics. Kept small: no
 # Grafana or Alertmanager, 7 days of data. Selectors are left at the chart's
-# defaults on purpose: Hybernate's docs should say what it needs.
+# defaults on purpose: Napwake's docs should say what it needs.
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:

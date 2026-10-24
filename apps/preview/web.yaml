@@ -1,16 +1,16 @@
 # A preview environment on a public URL, as a team with one per pull
 # request has: woken only by a person (the doorman's Wake it button) or by
-# tooling (hybernate.io/wake-requested), so crawlers can't keep it awake.
+# tooling (napwake.dev/wake-requested), so crawlers can't keep it awake.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: web
   labels:
-    hybernate.io/managed: "true"
+    napwake.dev/managed: "true"
   annotations:
-    hybernate.io/dry-run: "false"
-    hybernate.io/idle-after: "5m"
-    hybernate.io/wake: ask
+    napwake.dev/dry-run: "false"
+    napwake.dev/idle-after: "5m"
+    napwake.dev/wake: ask
 spec:
   replicas: 1
   selector:

@@ -1,4 +1,4 @@
-# Event-driven autoscaling, to test Hybernate with a KEDA-scaled workload.
+# Event-driven autoscaling, to test Napwake with a KEDA-scaled workload.
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:

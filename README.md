@@ -1,11 +1,11 @@
 # hybernate-staging
 
-The staging environment for [Hybernate](https://github.com/okedeji/hybernate)'s pre-launch test: a small GKE cluster that runs like a team's non-production estate, so Hybernate can be used as a beta user would use it, for a few weeks, before launch.
+The staging environment for [Napwake](https://github.com/napwake/napwake)'s pre-launch test: a small GKE cluster, `napwake` in the `napwake-test` project, that runs like a team's non-production estate, so Napwake can be used as a beta user would use it before launch. It ran Hybernate, Napwake's old name, on the `prelaunch` cluster until 2026-10-24.
 
 Argo CD applies everything here from Git:
 
 - `bootstrap/`: the Argo CD application that applies the rest
-- `platform/`: what the cluster needs around the apps (ingress, Prometheus, KEDA)
-- `apps/`: the staging apps Hybernate manages, on the `workloads` node pool, and the load generator that keeps them busy during working hours
+- `argocd-apps/`: an Argo CD application for each part. The platform around the apps (ingress-nginx, Prometheus, KEDA), and each staging app.
+- `apps/`: the staging apps Napwake manages, on the `workloads` node pool, and the load generator that keeps them busy during working hours
 
-Hybernate itself is installed by hand from its docs, so the test also tests the docs.
+Napwake itself is installed from its docs at docs.napwake.dev, so the test also tests the docs.

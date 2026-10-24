@@ -31,8 +31,9 @@ patches:
       kind: Service
       metadata:
         name: frontend-external
-  # Hybernate manages every service, pausing for real since 2026-10-24
-  # (dry-run Oct 21-24). The upstream manifests can't carry the label, so
+  # Napwake manages every service, pausing for real (Hybernate did on the
+  # retired prelaunch cluster from 2026-10-24, after a dry-run from Oct 21).
+  # The upstream manifests can't carry the label, so
   # a patch adds it to each Deployment's own metadata; commonLabels would
   # add it to their selectors too.
   - target: {kind: Deployment}
@@ -42,9 +43,9 @@ patches:
       metadata:
         name: any
         labels:
-          hybernate.io/managed: "true"
+          napwake.dev/managed: "true"
         annotations:
-          hybernate.io/dry-run: "false"
+          napwake.dev/dry-run: "false"
   # Requests a team would give these services, about 2.9 vCPU in all, so
   # working hours need two or three spot nodes and a night of pauses
   # frees them. Upstream's CPU limits sit below these requests, so the
@@ -91,9 +92,11 @@ patches:
         value:
           requests: {cpu: 150m, memory: 256Mi}
           limits: {memory: 256Mi}
-  # The frontend's ManagedWorkload, which Hybernate made from the label, has
-  # an activity query on its ingress request rate, added as the dry-run
-  # guide says, so it sees people's requests while it's awake (2026-10-24):
+  # The frontend's ManagedWorkload, which Napwake makes from the label, is
+  # given an activity query on its ingress request rate, as the dry-run
+  # guide says, so it sees people's requests while it's awake. On the
+  # retired cluster this query never matched a series (PrometheusQueryEmpty),
+  # so check its labels against Prometheus before applying it:
   #   kubectl patch managedworkload frontend -n boutique --type=json -p '[{"op":"add","path":"/spec/idlePolicy/activity/prometheus","value":[{"promQL":"sum(rate(nginx_ingress_controller_requests{exported_namespace=\"boutique\",exported_service=\"frontend\"}[5m]))"}]}]'
   # The other services are its dependencies, held awake while it is.
   # Every service runs on the spot workloads pool.
