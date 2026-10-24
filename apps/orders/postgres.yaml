@@ -38,7 +38,7 @@ metadata:
   labels:
     hybernate.io/managed: "true"
   annotations:
-    hybernate.io/dry-run: "true"
+    hybernate.io/dry-run: "false"
 spec:
   serviceName: postgres
   replicas: 1

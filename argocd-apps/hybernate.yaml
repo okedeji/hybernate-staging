@@ -15,6 +15,17 @@ spec:
         timezone: Africa/Lagos
         prometheus:
           url: http://prometheus-kube-prometheus-prometheus.monitoring.svc:9090
+        metrics:
+          readerSubjects:
+            - kind: ServiceAccount
+              name: prometheus-kube-prometheus-prometheus
+              namespace: monitoring
+          serviceMonitor:
+            enabled: true
+            additionalLabels: {release: prometheus}
+          prometheusRule:
+            enabled: true
+            additionalLabels: {release: prometheus}
   destination:
     server: https://kubernetes.default.svc
     namespace: hybernate-system

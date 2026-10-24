@@ -31,8 +31,8 @@ patches:
       kind: Service
       metadata:
         name: frontend-external
-  # Hybernate manages every service, measuring first: nothing is paused
-  # while dry-run is on. The upstream manifests can't carry the label, so
+  # Hybernate manages every service, pausing for real since 2026-10-24
+  # (dry-run Oct 21-24). The upstream manifests can't carry the label, so
   # a patch adds it to each Deployment's own metadata; commonLabels would
   # add it to their selectors too.
   - target: {kind: Deployment}
@@ -44,7 +44,53 @@ patches:
         labels:
           hybernate.io/managed: "true"
         annotations:
-          hybernate.io/dry-run: "true"
+          hybernate.io/dry-run: "false"
+  # Requests a team would give these services, about 2.9 vCPU in all, so
+  # working hours need two or three spot nodes and a night of pauses
+  # frees them. Upstream's CPU limits sit below these requests, so the
+  # whole resources block is replaced: no CPU limit, its memory limit.
+  - target: {kind: Deployment, name: "frontend"}
+    patch: |
+      - op: replace
+        path: /spec/template/spec/containers/0/resources
+        value:
+          requests: {cpu: 400m, memory: 128Mi}
+          limits: {memory: 128Mi}
+  - target: {kind: Deployment, name: "adservice"}
+    patch: |
+      - op: replace
+        path: /spec/template/spec/containers/0/resources
+        value:
+          requests: {cpu: 300m, memory: 300Mi}
+          limits: {memory: 300Mi}
+  - target: {kind: Deployment, name: "cartservice"}
+    patch: |
+      - op: replace
+        path: /spec/template/spec/containers/0/resources
+        value:
+          requests: {cpu: 300m, memory: 128Mi}
+          limits: {memory: 128Mi}
+  - target: {kind: Deployment, name: "recommendationservice"}
+    patch: |
+      - op: replace
+        path: /spec/template/spec/containers/0/resources
+        value:
+          requests: {cpu: 250m, memory: 256Mi}
+          limits: {memory: 450Mi}
+  - target: {kind: Deployment, name: "checkoutservice|currencyservice|emailservice|paymentservice|productcatalogservice|shippingservice"}
+    patch: |
+      - op: replace
+        path: /spec/template/spec/containers/0/resources
+        value:
+          requests: {cpu: 250m, memory: 128Mi}
+          limits: {memory: 128Mi}
+  - target: {kind: Deployment, name: "redis-cart"}
+    patch: |
+      - op: replace
+        path: /spec/template/spec/containers/0/resources
+        value:
+          requests: {cpu: 150m, memory: 256Mi}
+          limits: {memory: 256Mi}
   # Every service runs on the spot workloads pool.
   - target: {kind: Deployment}
     patch: |

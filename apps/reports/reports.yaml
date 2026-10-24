@@ -32,10 +32,10 @@ spec:
       labels:
         app: reports
     spec:
+      # It never pauses (PVCs deleted on scale-down), so it stays off the
+      # non-prod pool, which pauses should be able to empty.
       nodeSelector:
-        tier: non-prod
-      tolerations:
-        - {key: tier, operator: Equal, value: non-prod, effect: NoSchedule}
+        tier: system
       containers:
         - name: reports
           image: registry.k8s.io/e2e-test-images/agnhost:2.53
