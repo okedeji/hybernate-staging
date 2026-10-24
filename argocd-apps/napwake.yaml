@@ -1,0 +1,24 @@
+# Napwake itself, exactly as its installation guide's Argo CD tab has it:
+# https://docs.napwake.dev/next/getting-started/installation/#with-argo-cd-or-flux
+# The guide's time zone is changed to the staging users', as it says to.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: napwake
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: ghcr.io/napwake/charts
+    chart: napwake
+    targetRevision: 0.2.0-rc.9
+    helm:
+      valuesObject:
+        timezone: Africa/Lagos
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: napwake-system
+  syncPolicy:
+    automated: {}
+    syncOptions:
+      - CreateNamespace=true
