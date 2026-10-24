@@ -7,17 +7,12 @@ metadata:
 spec:
   project: default
   source:
-    # Click to wake (feat/click-to-wake) on GKE before its PR: the branch's own chart,
-    # whose CRDs and doorman wake key rc.6's lack, with its dev image. Back to a release after.
-    repoURL: https://github.com/okedeji/hybernate.git
-    path: charts/hybernate
-    targetRevision: b8d71468a7d17b2e83b4e34fc5ce8cdb32a079d2
+    repoURL: ghcr.io/okedeji/charts
+    chart: hybernate
+    targetRevision: 0.2.0-rc.7
     helm:
       valuesObject:
         timezone: Africa/Lagos
-        image:
-          repository: europe-west1-docker.pkg.dev/hybernate-prelaunch/hybernate-dev/hybernate
-          tag: dev-ctw-b8d7146
         prometheus:
           url: http://prometheus-kube-prometheus-prometheus.monitoring.svc:9090
   destination:
