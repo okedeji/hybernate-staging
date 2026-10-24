@@ -31,8 +31,16 @@ spec:
             - {name: PGRST_DB_URI, value: "postgres://authenticator@postgres:5432/orders"}
             - {name: PGRST_DB_SCHEMAS, value: api}
             - {name: PGRST_DB_ANON_ROLE, value: web_anon}
+            # Health checks on their own port: /ready answers once PostgREST
+            # reaches postgres and has loaded its schema, so a woken API gets
+            # traffic only when it can answer it.
+            - {name: PGRST_ADMIN_SERVER_PORT, value: "3001"}
           ports:
             - containerPort: 3000
+            - {name: admin, containerPort: 3001}
+          readinessProbe:
+            httpGet: {path: /ready, port: admin}
+            periodSeconds: 2
           resources:
             requests: {cpu: 50m, memory: 64Mi}
 ---
