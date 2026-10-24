@@ -94,9 +94,10 @@ patches:
           limits: {memory: 256Mi}
   # The frontend's ManagedWorkload, which Napwake makes from the label, is
   # given an activity query on its ingress request rate, as the dry-run
-  # guide says, so it sees people's requests while it's awake. On the
-  # retired cluster this query never matched a series (PrometheusQueryEmpty),
-  # so check its labels against Prometheus before applying it:
+  # guide says, so it sees people's requests while it's awake. Its labels
+  # are right (checked 2026-10-24): ingress-nginx makes the series only once
+  # a request goes through, so on a quiet weekend it matches nothing, which
+  # the retired cluster reported as PrometheusQueryEmpty:
   #   kubectl patch managedworkload frontend -n boutique --type=json -p '[{"op":"add","path":"/spec/idlePolicy/activity/prometheus","value":[{"promQL":"sum(rate(nginx_ingress_controller_requests{exported_namespace=\"boutique\",exported_service=\"frontend\"}[5m]))"}]}]'
   # The other services are its dependencies, held awake while it is.
   # Every service runs on the spot workloads pool.
