@@ -1,6 +1,9 @@
 # Napwake itself, exactly as its installation guide's Argo CD tab has it:
 # https://docs.napwake.dev/next/getting-started/installation/#with-argo-cd-or-flux
 # The guide's time zone is changed to the staging users', as it says to.
+# Prometheus, as the Prometheus activity guide says, and the metrics and
+# alerts, as Monitoring's kube-prometheus-stack example says, with this
+# stack's names (release "prometheus").
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -15,6 +18,21 @@ spec:
     helm:
       valuesObject:
         timezone: Africa/Lagos
+        prometheus:
+          url: http://prometheus-kube-prometheus-prometheus.monitoring.svc:9090
+        metrics:
+          serviceMonitor:
+            enabled: true
+            additionalLabels:
+              release: prometheus
+          prometheusRule:
+            enabled: true
+            additionalLabels:
+              release: prometheus
+          readerSubjects:
+            - kind: ServiceAccount
+              name: prometheus-kube-prometheus-prometheus
+              namespace: monitoring
   destination:
     server: https://kubernetes.default.svc
     namespace: napwake-system
