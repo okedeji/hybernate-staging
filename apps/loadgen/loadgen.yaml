@@ -1,4 +1,4 @@
-# Working-hours traffic: every 5 minutes, 09:00-17:59 Lagos time, Monday to
+# Working-hours traffic: every 5 minutes, 09:00-17:59 New York time, Monday to
 # Friday, a job of three shoppers browses the shop, places and lists
 # orders, and reads a report for about four minutes. The shop and orders
 # come in through ingress-nginx, by its in-cluster Service and the public
@@ -9,7 +9,7 @@ metadata:
   name: working-hours
 spec:
   schedule: "*/5 9-17 * * 1-5"
-  timeZone: Africa/Lagos
+  timeZone: America/New_York
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 3

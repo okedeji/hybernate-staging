@@ -17,7 +17,7 @@ spec:
     targetRevision: 0.2.0-rc.9
     helm:
       valuesObject:
-        timezone: Africa/Lagos
+        timezone: America/New_York
         prometheus:
           url: http://prometheus-kube-prometheus-prometheus.monitoring.svc:9090
         metrics:
