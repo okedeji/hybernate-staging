@@ -46,6 +46,11 @@ patches:
           napwake.dev/managed: "true"
         annotations:
           napwake.dev/dry-run: "false"
+          # A pool at zero, as the node-pools guide sets it up: a wake
+          # can wait for a new node, so held requests wait 5 minutes, and
+          # the forecast wakes the shop ahead of weekday mornings (P67).
+          napwake.dev/wake-max-wait: "5m"
+          napwake.dev/auto-resume: "true"
   # Requests a team would give these services, about 2.9 vCPU in all, so
   # working hours need two or three spot nodes and a night of pauses
   # frees them. Upstream's CPU limits sit below these requests, so the

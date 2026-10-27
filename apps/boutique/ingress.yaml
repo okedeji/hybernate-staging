@@ -2,6 +2,10 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: frontend
+  annotations:
+    # Matches the shop's wake-max-wait, as the node-pools guide says, so a
+    # request held through a new node's wake isn't cut at nginx's 60s.
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
 spec:
   ingressClassName: nginx
   rules:

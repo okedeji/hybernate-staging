@@ -10,6 +10,8 @@ metadata:
     napwake.dev/idle-after: "5m"
     # The forecast test: woken before weekday mornings once the forecast acts.
     napwake.dev/auto-resume: "true"
+    # A wake can wait for a new node on the pool at zero (node-pools guide).
+    napwake.dev/wake-max-wait: "5m"
 spec:
   replicas: 2
   selector:
@@ -60,6 +62,9 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: api
+  annotations:
+    # Matches api's wake-max-wait, as the node-pools guide says.
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
 spec:
   ingressClassName: nginx
   rules:

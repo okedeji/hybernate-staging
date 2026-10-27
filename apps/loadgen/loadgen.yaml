@@ -38,12 +38,12 @@ spec:
                   end=$(( $(date +%s) + 270 ))
                   shopper() {
                     while [ "$(date +%s)" -lt "$end" ]; do
-                      curl -s -o /dev/null -m 120 -H "$shop" "$ingress/"
-                      curl -s -o /dev/null -m 120 -H "$shop" "$ingress/product/OLJCESPC7Z"
-                      curl -s -o /dev/null -m 120 -H "$orders" -H 'Content-Type: application/json' \
+                      curl -s -o /dev/null -m 300 -H "$shop" "$ingress/"
+                      curl -s -o /dev/null -m 300 -H "$shop" "$ingress/product/OLJCESPC7Z"
+                      curl -s -o /dev/null -m 300 -H "$orders" -H 'Content-Type: application/json' \
                         -d '{"item":"sunglasses","qty":1}' "$ingress/orders"
-                      curl -s -o /dev/null -m 120 -H "$orders" "$ingress/orders?order=id.desc&limit=5"
-                      curl -s -o /dev/null -m 120 "$reports"
+                      curl -s -o /dev/null -m 300 -H "$orders" "$ingress/orders?order=id.desc&limit=5"
+                      curl -s -o /dev/null -m 300 "$reports"
                       sleep $(( $(od -An -N1 -tu1 /dev/urandom) % 10 + 2 ))
                     done
                   }

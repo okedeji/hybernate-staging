@@ -39,6 +39,8 @@ metadata:
     napwake.dev/managed: "true"
   annotations:
     napwake.dev/dry-run: "false"
+    # A wake can wait for a new node on the pool at zero (node-pools guide).
+    napwake.dev/wake-max-wait: "5m"
 spec:
   serviceName: postgres
   replicas: 1
