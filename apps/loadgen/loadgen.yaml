@@ -3,6 +3,9 @@
 # orders, and reads a report for about four minutes. The shop and orders
 # come in through ingress-nginx, by its in-cluster Service and the public
 # host names, as people's requests do. Nights and weekends stay quiet.
+# One shopper starts each loop by adding to its cart, a write: on a morning
+# the shop wakes on a new node, it's held past nginx's 60s default, which
+# retries reads but not writes, through the shop's proxy-read-timeout.
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -38,6 +41,10 @@ spec:
                   end=$(( $(date +%s) + 270 ))
                   shopper() {
                     while [ "$(date +%s)" -lt "$end" ]; do
+                      if [ "$1" = buyer ]; then
+                        curl -s -o /dev/null -m 300 -H "$shop" \
+                          -d 'product_id=OLJCESPC7Z&quantity=1' "$ingress/cart"
+                      fi
                       curl -s -o /dev/null -m 300 -H "$shop" "$ingress/"
                       curl -s -o /dev/null -m 300 -H "$shop" "$ingress/product/OLJCESPC7Z"
                       curl -s -o /dev/null -m 300 -H "$orders" -H 'Content-Type: application/json' \
@@ -47,5 +54,5 @@ spec:
                       sleep $(( $(od -An -N1 -tu1 /dev/urandom) % 10 + 2 ))
                     done
                   }
-                  shopper & shopper & shopper &
+                  shopper buyer & shopper & shopper &
                   wait
