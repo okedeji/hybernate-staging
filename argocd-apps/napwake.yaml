@@ -14,7 +14,7 @@ spec:
   source:
     repoURL: ghcr.io/napwake/charts
     chart: napwake
-    targetRevision: 0.2.0-rc.11
+    targetRevision: 0.2.0-rc.13
     helm:
       valuesObject:
         timezone: America/New_York
