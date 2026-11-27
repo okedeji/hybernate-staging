@@ -54,6 +54,11 @@ spec:
     metadata:
       labels:
         app: postgres
+      annotations:
+        # Keeps GKE's autoscaler from draining postgres with a node it finds
+        # underused, which cut orders/api off for two minutes after the
+        # morning wake (P101). When Napwake pauses postgres, the node can go.
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
     spec:
       nodeSelector:
         tier: non-prod
